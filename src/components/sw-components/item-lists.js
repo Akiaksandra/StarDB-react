@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import ItemList from '../item-list';
 import { withData, withSwapiService } from '../hoc-helpers';
+import { SwapiContext } from '../../context/alert/swapi-context';
 
 const withChildFunction = (Wrapped, fn) => {
   return (props) => {
@@ -31,7 +32,14 @@ const mapStarshipMethodsToProps = (swapiService) => {
     getData: swapiService.getAllStarships
   };
 };
-
+const PersonSuperList = () => {
+  const {getAllPeople} = useContext(SwapiContext)
+  return (
+    <ItemList data={getAllPeople}>
+      renderName()
+    </ItemList>
+  )
+}
 const PersonList = withSwapiService(
                       withData(
                         withChildFunction(ItemList, renderName)),

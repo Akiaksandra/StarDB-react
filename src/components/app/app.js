@@ -1,34 +1,31 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 import Header from '../header';
 import RandomPlanet from '../random-planet';
 import ErrorBoundry from "../error-boundry";
-import SwapiService from '../../services/swapi-service';
-import { SwapiServiceProvider } from '../swapi-service-context';
+import { SwapiState } from '../../context/alert/swapi-state';
 
 import './app.css';
 import { PeoplePage, PlanetsPage, StartshipsPage, SecretPage, LoginPage } from '../pages';
 import { StarshipDetails } from '../sw-components';
 
-export default class App extends Component {
+const initState = {
+  isLoggedIn: false
+}
 
-  state = {
-    isLoggedIn: false
+const App = () => {
+
+  const [state, setState] = useState(initState);
+
+  const onLogin = () => {
+    setState({ isLoggedIn: true })
   }
 
-  onLogin = () => {
-    this.setState({ isLoggedIn: true })
-  }
-
-  swapiService = new SwapiService();
-
-  render() {
-
-    const {isLoggedIn} = this.state;
+    const {isLoggedIn} = state;
     return (
       <ErrorBoundry>
-        <SwapiServiceProvider value={this.swapiService}>
+        <SwapiState >
           <Router>
             <div className="stardb-app">
               <Header />
@@ -52,7 +49,7 @@ export default class App extends Component {
                   render={() => (
                     <LoginPage
                       isLoggedIn={isLoggedIn}
-                      onLogin={this.onLogin}/>
+                      onLogin={onLogin}/>
                   )}/>
 
                 <Route
@@ -65,8 +62,9 @@ export default class App extends Component {
               </Switch>
             </div>
           </Router>
-        </SwapiServiceProvider>
+        </SwapiState>
       </ErrorBoundry>
     );
-  }
 }
+
+export default App;

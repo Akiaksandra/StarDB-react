@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 
 import Row from '../row';
 
@@ -7,21 +7,23 @@ import {
   PlanetList,
 } from '../sw-components';
 
-export default class PlanetPage extends Component {
+const initState = {
+  selectedItem: null
+};
 
-  state = {
-    selectedItem: null
+const PlanetPage = () => {
+
+  const [state, setState] = useState(initState);
+
+  const onItemSelected = (selectedItem) => {
+    setState({ selectedItem });
   };
 
-  onItemSelected = (selectedItem) => {
-    this.setState({ selectedItem });
-  };
-
-  render() {
     return (
       <Row 
-          left={<PlanetList onItemSelected={this.onItemSelected}/>} 
-          right={<PlanetDetails itemId={this.state.selectedItem}/>} />
+          left={<PlanetList onItemSelected={onItemSelected}/>} 
+          right={<PlanetDetails itemId={state.selectedItem}/>} />
     );
-  }
 }
+
+export default PlanetPage;

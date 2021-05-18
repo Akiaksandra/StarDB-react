@@ -1,47 +1,51 @@
-import React, { Component, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import './item-details.css';
 
-export default class ItemDetails extends Component {
+const initState = {
+  item: null,
+  image: null
+};
+const ItemDetails = (props) => {
 
-  state = {
-    item: null,
-    image: null
-  };
+  const [state, setState] = useState(initState);
 
-  // useEffect(() => {
+    // useEffect(() => {
   //   updateItem();
   // }, [props.itemId])
 
+  // componentDidUpdate(prevProps) {
+  //   if (this.props.itemId !== prevProps.itemId) {
+  //     this.updateItem();
+  //   }
+  // }
 
-  componentDidMount() {
-    this.updateItem();
-  }
+  // componentDidMount() {
+  //   this.updateItem();
+  // }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.itemId !== prevProps.itemId) {
-      this.updateItem();
-    }
-  }
+  useEffect(() => {
+    let cancelled = false;
+    if (!cancelled) updateItem();
+    return () => cancelled = true;
+  })
 
-  updateItem() {
-    const { itemId, getData, getImageUrl } = this.props;
+  const updateItem = () => {
+    const { itemId, getData, getImageUrl } = props;
     if (!itemId) {
       return;
     }
 
     getData(itemId)
       .then((item) => {
-        this.setState({
+        setState({
           item, 
           image: getImageUrl(item) 
         });
       });
   }
 
-  render() {
-
-    const { item, image } = this.state;
+    const { item, image } = state;
     if (!item) {
       return <span>Select a person from a list</span>;
     }
@@ -58,7 +62,7 @@ export default class ItemDetails extends Component {
           <h4>{name}</h4>
           <ul className="list-group list-group-flush">
             { 
-              React.Children.map(this.props.children, (child) => {
+              React.Children.map(props.children, (child) => {
                 return React.cloneElement(child, { item });
                 })
             }
@@ -66,5 +70,7 @@ export default class ItemDetails extends Component {
         </div>
       </div>
     )
-  }
+
 }
+
+export default ItemDetails;

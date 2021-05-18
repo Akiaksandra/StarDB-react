@@ -1,64 +1,67 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { useContext, useEffect, useState } from 'react';
+// import PropTypes from 'prop-types';
+import PlanetView from './planet-view';
 
 import Spinner from '../spinner';
 import ErrorIndicator from '../error-indicator';
 import SwapiService from '../../services/swapi-service';
+import {SwapiContext} from '../../context/alert/swapi-context'
 
 import './random-planet.css';
 
-export default class RandomPlanet extends Component {
+const initState = {
+  planet: {},
+  loading: true,
+  error: false
+};
 
-  static defaultProps = {
-    updateInterval: 3000
-  }
+const RandomPlanet = () => {
 
-  static propTypes = {
-    updateInterval: PropTypes.number
-  }
+  const [state, setState] = useState(initState)
 
-  swapiService = new SwapiService();
+  const { getPlanet, swapiState } = useContext(SwapiContext);
+  console.log(swapiState)
+  // componentDidMount() {
+  //   updatePlanet();
+  //   //interval = setInterval(updatePlanet, 5000);
+  // }
 
-  state = {
-    planet: {},
-    loading: true
-  };
+  // componentWillUnmount() {
+  //   clearInterval(interval);
+  // }
 
-  componentDidMount() {
-    const { updateInterval } = this.props;
-    this.updatePlanet();
-    this.interval = setInterval(this.updatePlanet, updateInterval);
-  }
+  useEffect(() => {
+    updatePlanet();
+    // const interval = setInterval(updatePlanet, 5000);
+    // return () => clearInterval(interval);
+  }, []);
+  
 
-  componentWillUnmount() {
-    clearInterval(this.interval);
-  }
-
-  onPlanetLoaded = (planet) => {
-    this.setState({
+  const onPlanetLoaded = (planet) => {
+    setState({
       planet,
       loading: false,
       error: false
     });
   };
+  useEffect(()=>{
+    onPlanetLoaded(swapiState.data)
+  }, [swapiState.data])
 
-  onError = (err) => {
-    this.setState({
+  const onError = () => {
+    setState({
+      ...state,
       error: true,
       loading: false
     });
   };
 
-  updatePlanet = () => {
+  const updatePlanet = () => {
     const id = Math.floor(Math.random()*17) + 2;
-    this.swapiService
-      .getPlanet(id)
-      .then(this.onPlanetLoaded)
-      .catch(this.onError);
+      getPlanet(id)
   };
 
-  render() {
-    const { planet, loading, error } = this.state;
+    const { planet, loading, error } = state;
 
     const hasData = !(loading || error);
 
@@ -73,40 +76,6 @@ export default class RandomPlanet extends Component {
         {content}
       </div>
     );
-  }
 }
 
-
-const PlanetView = ({ planet }) => {
-
-  const { id, name, population,
-    rotationPeriod, diameter } = planet;
-
-  return (
-    <React.Fragment>
-      <img className="planet-image"
-           src={`https://starwars-visualguide.com/assets/img/planets/${id}.jpg`}
-           alt="planet" />
-      <div>
-        <h4>{name}</h4>
-        <ul className="list-group list-group-flush">
-          <li className="list-group-item">
-            <span className="term">Population</span>
-            <span>{population}</span>
-          </li>
-          <li className="list-group-item">
-            <span className="term">Rotation Period</span>
-            <span>{rotationPeriod}</span>
-          </li>
-          <li className="list-group-item">
-            <span className="term">Diameter</span>
-            <span>{diameter}</span>
-          </li>
-        </ul>
-      </div>
-    </React.Fragment>
-  );
-};
-
-
-
+export default RandomPlanet;

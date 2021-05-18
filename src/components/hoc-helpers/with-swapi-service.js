@@ -1,11 +1,12 @@
 import React from 'react';
-
+import {SwapiState} from '../../context/alert/swapi-state'
 import { SwapiServiceConsumer } from '../swapi-service-context';
 
 const withSwapiService = (Wrapped, mapMethodsToProps) => {
+  // const swapiService = useContext(SwapiContext);
   return (props) => {
     return (
-      <SwapiServiceConsumer>
+      <SwapiState>
         {
           (swapiService) => {
             const servicePropse = mapMethodsToProps(swapiService)
@@ -15,7 +16,7 @@ const withSwapiService = (Wrapped, mapMethodsToProps) => {
           }
         }
         
-      </SwapiServiceConsumer>
+      </SwapiState>
     )
   }
 }
